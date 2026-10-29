@@ -1,0 +1,22 @@
+# Scraper configuration for GB-PPRA.
+# The real site is https://www.gbppra.gov.pk  (ppra.gbit.gov.pk returns a hosting "page not found" page).
+# Known pages:   /viewall  (all procurements, newest first, ?page=N)   /procurementdetails/<id>  (one tender)
+#
+# Check what the parser extracts at any time with:
+#     docker compose run --rm -v "$PWD/config:/app/config" api python -m app.cli probe "https://www.gbppra.gov.pk/viewall"
+#     docker compose run --rm -v "$PWD/config:/app/config" api python -m app.cli probe --detail "https://www.gbppra.gov.pk/procurementdetails/<id>"
+base_url: "https://www.gbppra.gov.pk"
+
+listing_urls:
+  - "/viewall"
+
+render: false   # true => use Playwright for JavaScript-rendered pages
+
+listing:
+  mode: links                      # every link to a tender detail page = one tender (works for cards or tables)
+  link_pattern: "procurementdetails"
+  page_param: "page"               # /viewall?page=2, ?page=3 ... stops at the first empty/repeated page
+
+detail:
+  enabled: true                    # detail page supplies reference (TSE-...), title, description, department, dates, documents
+  mode: auto

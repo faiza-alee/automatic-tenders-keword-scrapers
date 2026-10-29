@@ -1,0 +1,58 @@
+[
+ {
+  "title": "Procurement of 40 laptops and network printers",
+  "text": "Supply of laptops, desktop computers, laser printers and toner cartridges for the education department.",
+  "categories": [
+   "IT Equipment and Computer Hardware"
+  ]
+ },
+ {
+  "title": "Development of web portal and mobile application",
+  "text": "Software development for an e-governance web application with a database backend and cloud hosting.",
+  "categories": [
+   "Software and Web Development"
+  ]
+ },
+ {
+  "title": "Repair of link road at Jutial Gilgit (metaling work)",
+  "text": "Sealed tenders for metaling, asphalt carpeting and retaining wall works on the link road, PEC licensed contractors.",
+  "categories": [
+   "Construction and Road Maintenance"
+  ]
+ },
+ {
+  "title": "Supply of surgical items and medicines",
+  "text": "District hospital invites bids for surgical equipment, ultrasound machines, laboratory reagents and medicines.",
+  "categories": [
+   "Medical Equipment and Healthcare Supplies"
+  ]
+ },
+ {
+  "title": "Supply of stationery and printing materials",
+  "text": "Office stationery, paper, files, printing material and furniture such as tables and chairs for the office.",
+  "categories": [
+   "Furniture and Stationery"
+  ]
+ },
+ {
+  "title": "Consultancy services for feasibility study and design supervision",
+  "text": "Request for proposal from consulting firms for a feasibility study, survey and supervision of the project.",
+  "categories": [
+   "Consultancy and Professional Services"
+  ]
+ },
+ {
+  "title": "Installation of firewall, routers and CCTV surveillance network",
+  "text": "Supply and installation of networking equipment: routers, switches, firewall, optical fiber and cybersecurity monitoring.",
+  "categories": [
+   "Networking and Cybersecurity"
+  ]
+ },
+ {
+  "title": "Machine learning based flood prediction system",
+  "text": "Development of an artificial intelligence and machine learning model for flood early warning using computer vision.",
+  "categories": [
+   "Artificial Intelligence and Machine Learning"
+  ]
+ }
+]

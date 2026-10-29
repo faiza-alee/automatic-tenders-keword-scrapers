@@ -1,0 +1,7 @@
+services:
+  api:
+    volumes: ["./app:/app/app", "./config:/app/config"]
+  worker:
+    volumes: ["./app:/app/app", "./config:/app/config"]
+  migrate:
+    volumes: ["./app:/app/app", "./config:/app/config"]

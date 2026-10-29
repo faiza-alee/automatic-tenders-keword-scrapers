@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GB-PPRA Tender Monitor</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --text:#1c2430; --muted:#667085; --line:#e4e7ec; --accent:#2457d6; --ok:#12805c; --warn:#b54708; --bad:#b42318; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#12161c; --card:#1b212a; --text:#e7ebf0; --muted:#9aa4b2; --line:#2b3340; --accent:#7ea2ff; --ok:#4ccf9f; --warn:#f2a64a; --bad:#ff7b72; } }
+  * { box-sizing:border-box; }
+  body { margin:0; font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--text); }
+  header { display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; padding:14px 20px; background:var(--card); border-bottom:1px solid var(--line); }
+  h1 { font-size:18px; margin:0; }
+  main { max-width:1200px; margin:0 auto; padding:20px; display:grid; gap:20px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; }
+  .card h2 { font-size:15px; margin:0 0 12px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; }
+  .stat { border:1px solid var(--line); border-radius:8px; padding:10px 12px; }
+  .stat b { display:block; font-size:22px; }
+  .stat span { color:var(--muted); font-size:12px; }
+  input, select, button { font:inherit; padding:7px 10px; border:1px solid var(--line); border-radius:7px; background:var(--card); color:var(--text); }
+  button { cursor:pointer; background:var(--accent); color:#fff; border-color:var(--accent); }
+  button.ghost { background:transparent; color:var(--text); border-color:var(--line); }
+  button:disabled { opacity:.5; cursor:default; }
+  .row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  .scroll { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.03em; }
+  tbody tr.click { cursor:pointer; } tbody tr.click:hover { background:rgba(127,127,127,.08); }
+  .pill { display:inline-block; padding:1px 8px; border-radius:99px; font-size:12px; border:1px solid var(--line); margin:1px 2px 1px 0; }
+  .success,.open,.done { color:var(--ok); border-color:var(--ok); }
+  .partial,.running,.pending,.skipped { color:var(--warn); border-color:var(--warn); }
+  .failed,.closed,.cancelled,.abandoned { color:var(--bad); border-color:var(--bad); }
+  .muted { color:var(--muted); }
+  .msg { padding:10px 12px; border-radius:8px; border:1px solid var(--line); }
+  .msg.err { color:var(--bad); border-color:var(--bad); }
+  dialog { width:min(760px,94vw); border:1px solid var(--line); border-radius:12px; background:var(--card); color:var(--text); padding:20px; }
+  dialog::backdrop { background:rgba(0,0,0,.45); }
+  dl { display:grid; grid-template-columns:140px 1fr; gap:6px 12px; margin:0; } dt { color:var(--muted); } dd { margin:0; word-break:break-word; }
+  a { color:var(--accent); }
+</style>
+</head>
+<body>
+<header>
+  <h1>GB-PPRA Tender Monitor</h1>
+  <div class="row">
+    <input id="key" type="password" placeholder="API key (admin key paste karein)" size="34" autocomplete="off">
+    <button id="login">Connect</button>
+    <a href="/docs" target="_blank" rel="noopener">API docs</a>
+  </div>
+</header>
+
+<main>
+  <div id="msg" class="msg">Upar apni <b>ADMIN_API_KEYS</b> wali key paste karke <b>Connect</b> dabayen. Key sirf is browser tab mein rehti hai.</div>
+
+  <section class="card" id="statusCard" hidden>
+    <div class="row" style="justify-content:space-between">
+      <h2>System status <span class="muted" id="updated"></span></h2>
+      <div class="row"><button id="runNow">Run scraping now</button></div>
+    </div>
+    <div class="grid" id="stats"></div>
+  </section>
+
+  <section class="card" id="runsCard" hidden>
+    <h2>Recent scraping runs</h2>
+    <div class="scroll"><table>
+      <thead><tr><th>#</th><th>Started</th><th>Trigger</th><th>Status</th><th>Found</th><th>New</th><th>Updated</th><th>Failed</th><th>AI done</th><th>Error</th></tr></thead>
+      <tbody id="runs"></tbody>
+    </table></div>
+  </section>
+
+  <section class="card" id="tendersCard" hidden>
+    <h2>Tenders</h2>
+    <div class="row" style="margin-bottom:12px">
+      <input id="q" placeholder="Search (title, keyword...)" size="26">
+      <select id="status"><option value="">All status</option><option>open</option><option>closed</option><option>cancelled</option><option>awarded</option></select>
+      <select id="sort"><option value="first_seen">Newest found</option><option value="closing">Closing date</option><option value="published">Published</option><option value="title">Title</option></select>
+      <button id="search">Search</button>
+      <span class="muted" id="count"></span>
+    </div>
+    <div class="scroll"><table>
+      <thead><tr><th>ID</th><th>Title</th><th>Department</th><th>Closing</th><th>Status</th><th>Categories / keywords</th></tr></thead>
+      <tbody id="tenders"></tbody>
+    </table></div>
+    <div class="row" style="margin-top:12px">
+      <button class="ghost" id="prev">&larr; Prev</button><span id="pageinfo" class="muted"></span><button class="ghost" id="next">Next &rarr;</button>
+    </div>
+  </section>
+</main>
+
+<dialog id="dlg"><div id="dlgBody"></div><div class="row" style="margin-top:14px"><button class="ghost" id="dlgClose">Close</button></div></dialog>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pill = (t, cls) => `<span class="pill ${esc(cls || '')}">${esc(t)}</span>`;
+let key = sessionStorage.getItem('gbppra_key') || '';
+let page = 1, pages = 1, lastTotal = null, lastRunSig = null, isAdmin = false, timer = null;
+
+async function api(path, opts = {}) {
+  const r = await fetch('/api/v1' + path, { ...opts, headers: { 'X-API-Key': key } });
+  let j = {}; try { j = await r.json(); } catch (e) {}
+  if (!r.ok) { const e = new Error((j.error && j.error.message) || ('HTTP ' + r.status)); e.status = r.status; throw e; }
+  return j;
+}
+function say(text, err) { const m = $('#msg'); m.className = 'msg' + (err ? ' err' : ''); m.innerHTML = text; m.hidden = !text; }
+const when = s => s ? new Date(s).toLocaleString() : '-';
+
+async function connect() {
+  key = $('#key').value.trim() || key;
+  if (!key) { say('Pehle key paste karein.', true); return; }
+  try {
+    await api('/tenders?page_size=1');
+  } catch (e) { say(e.status === 401 ? 'Key ghalat hai. Dobara check karein.' : 'Error: ' + esc(e.message), true); return; }
+  sessionStorage.setItem('gbppra_key', key);
+  $('#tendersCard').hidden = false;
+  say('');
+  await refreshStatus();
+  await loadTenders();
+  clearInterval(timer); timer = setInterval(refreshStatus, 10000);
+}
+
+async function refreshStatus() {
+  try {
+    const s = (await api('/admin/status')).data;
+    isAdmin = true;
+    $('#statusCard').hidden = false; $('#runsCard').hidden = false;
+    const lr = s.last_run, ok = s.last_successful_run;
+    $('#stats').innerHTML = [
+      ['Total tenders', s.total_tenders],
+      ['Last run', lr ? lr.status : 'no run yet'],
+      ['Last run: new', lr ? lr.new : '-'],
+      ['Last run: updated', lr ? lr.updated : '-'],
+      ['Last run: failed', lr ? lr.failed : '-'],
+      ['Last success', ok ? when(ok.finished_at) : 'never'],
+      ['AI pending', s.nlp.pending], ['AI done', s.nlp.done], ['AI failed', s.nlp.failed],
+      ['Interval (min)', s.scrape_interval_minutes],
+    ].map(([k, v]) => `<div class="stat"><b>${esc(v)}</b><span>${esc(k)}</span></div>`).join('');
+    $('#updated').textContent = 'updated ' + new Date().toLocaleTimeString();
+    const runs = (await api('/admin/runs?limit=8')).data;
+    $('#runs').innerHTML = runs.length ? runs.map(r => `<tr><td>${r.id}</td><td>${esc(when(r.started_at))}</td><td>${esc(r.trigger)}</td><td>${pill(r.status, r.status)}</td><td>${r.found}</td><td>${r.new}</td><td>${r.updated}</td><td>${r.failed}</td><td>${r.nlp_processed}</td><td class="muted">${esc((r.error || '').slice(0, 120))}</td></tr>`).join('')
+      : '<tr><td colspan="10" class="muted">Abhi koi run nahi hui. "Run scraping now" dabayen ya agle scheduled run ka intezar karein.</td></tr>';
+    // reload the list when tenders are added, when a run finishes, or when AI results change (keywords appear after the run ends)
+    const sig = [s.total_tenders, lr ? lr.id + ':' + lr.status : '', s.nlp.done, s.nlp.pending].join('|');
+    if (lastRunSig !== null && sig !== lastRunSig && !$('#dlg').open) loadTenders();
+    lastRunSig = sig; lastTotal = s.total_tenders;
+  } catch (e) {
+    if (e.status === 403) { isAdmin = false; $('#statusCard').hidden = true; $('#runsCard').hidden = true; say('Yeh normal key hai: tenders nazar aayenge, magar scraping status ke liye <b>ADMIN</b> key chahiye.'); }
+    else say('Status error: ' + esc(e.message), true);
+  }
+}
+
+async function loadTenders() {
+  const p = new URLSearchParams({ page, page_size: 15, sort: $('#sort').value, order: $('#sort').value === 'title' ? 'asc' : 'desc' });
+  if ($('#q').value.trim()) p.set('q', $('#q').value.trim());
+  if ($('#status').value) p.set('status', $('#status').value);
+  try {
+    const j = await api('/tenders?' + p);
+    pages = j.meta.pages || 1;
+    $('#count').textContent = j.meta.total + ' tenders';
+    $('#pageinfo').textContent = 'Page ' + j.meta.page + ' / ' + pages;
+    $('#prev').disabled = page <= 1; $('#next').disabled = page >= pages;
+    $('#tenders').innerHTML = j.data.length ? j.data.map(t => `<tr class="click" data-id="${t.id}"><td>${t.id}</td><td>${esc(t.title)}<div class="muted">${esc(t.reference_number || '')}</div></td><td>${esc(t.department || '-')}</td><td>${esc(t.closing_date || '-')}</td><td>${pill(t.status, t.status)}</td><td>${t.categories.map(c => pill(c)).join('')}${t.keywords.slice(0, 5).map(k => `<span class="muted">#${esc(k)} </span>`).join('')}</td></tr>`).join('')
+      : '<tr><td colspan="6" class="muted">Koi tender nahi mila. Agar abhi system naya hai to scraper ko GB-PPRA ka page set karna baqi hai.</td></tr>';
+  } catch (e) { say('Tenders error: ' + esc(e.message), true); }
+}
+
+async function showTender(id) {
+  try {
+    const t = (await api('/tenders/' + id)).data;
+    const link = t.source_url && /^https?:\/\//i.test(t.source_url) ? `<a href="${esc(t.source_url)}" target="_blank" rel="noopener">${esc(t.source_url)}</a>` : '-';
+    $('#dlgBody').innerHTML = `<h2 style="margin-top:0">${esc(t.title)}</h2><dl>
+      <dt>Reference</dt><dd>${esc(t.reference_number || '-')}</dd>
+      <dt>Department</dt><dd>${esc(t.department || '-')}</dd>
+      <dt>Status</dt><dd>${pill(t.status, t.status)}</dd>
+      <dt>Published</dt><dd>${esc(t.publication_date || '-')}</dd>
+      <dt>Closing</dt><dd>${esc(t.closing_date || '-')}</dd>
+      <dt>Description</dt><dd>${esc(t.description || '-')}</dd>
+      <dt>Eligibility</dt><dd>${esc(t.eligibility || '-')}</dd>
+      <dt>Source</dt><dd>${link}</dd>
+      <dt>Categories</dt><dd>${t.category_details.map(c => pill(c.name + ' (' + c.score + ')')).join('') || '-'}</dd>
+      <dt>Keywords</dt><dd>${t.keyword_details.map(k => pill(k.term + ' ' + k.score)).join('') || '<span class="muted">AI abhi pending hai</span>'}</dd>
+      <dt>Documents</dt><dd>${t.documents.map(d => `${esc(d.filename || d.url)} ${pill(d.status, d.status === 'ok' ? 'done' : d.status)}`).join('<br>') || '-'}</dd>
+      <dt>AI status</dt><dd>${esc(t.nlp_status || '-')} <span class="muted">${esc(t.nlp_method || '')}</span></dd></dl>`;
+    $('#dlg').showModal();
+  } catch (e) { say('Detail error: ' + esc(e.message), true); }
+}
+
+$('#login').onclick = connect;
+$('#key').addEventListener('keydown', e => { if (e.key === 'Enter') connect(); });
+$('#search').onclick = () => { page = 1; loadTenders(); };
+$('#q').addEventListener('keydown', e => { if (e.key === 'Enter') { page = 1; loadTenders(); } });
+$('#status').onchange = $('#sort').onchange = () => { page = 1; loadTenders(); };
+$('#prev').onclick = () => { if (page > 1) { page--; loadTenders(); } };
+$('#next').onclick = () => { if (page < pages) { page++; loadTenders(); } };
+$('#tenders').onclick = e => { const tr = e.target.closest('tr[data-id]'); if (tr) showTender(tr.dataset.id); };
+$('#dlgClose').onclick = () => $('#dlg').close();
+$('#runNow').onclick = async () => {
+  const b = $('#runNow'); b.disabled = true;
+  try { await api('/admin/run', { method: 'POST' }); say('Scraping shuru ho gayi hai. Status har 10 second mein khud update hoga.'); setTimeout(refreshStatus, 3000); }
+  catch (e) { say('Run error: ' + esc(e.message), true); }
+  setTimeout(() => { b.disabled = false; }, 5000);
+};
+if (key) { $('#key').value = key; connect(); }
+</script>
+</body>
+</html>

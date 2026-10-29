@@ -1,0 +1,53 @@
+# Category taxonomy. Add categories or terms freely; bump `version` when you change it
+# (stored with each result) and run `python -m app.cli reprocess --all` to apply to existing tenders.
+version: "2026.2"
+fallback_category: "Other"
+categories:
+  - name: "Artificial Intelligence and Machine Learning"
+    group: "Information Technology"
+    terms: ["artificial intelligence", "machine learning", "deep learning", "neural network", "computer vision", "data science", "nlp", "chatbot", "predictive analytics"]
+  - name: "Software and Web Development"
+    group: "Information Technology"
+    terms: ["software", "web development", "web portal", "mobile app", "application development", "erp", "management information system", "mis", "database", "e-governance", "web application", "cloud computing", "web hosting"]
+  - name: "IT Equipment and Computer Hardware"
+    group: "Information Technology"
+    terms: ["computer", "computers", "laptop", "laptops", "desktop", "printer", "printers", "scanner", "photocopier", "server", "ups", "projector", "tablet", "toner", "hardware", "it equipment", "lcd", "led screen", "cartridge"]
+  - name: "Networking and Cybersecurity"
+    group: "Information Technology"
+    terms: ["network", "networking", "router", "switch", "firewall", "cybersecurity", "cyber security", "optical fiber", "fibre", "wifi", "wi-fi", "lan", "vpn", "cctv", "surveillance", "antivirus"]
+  - name: "Construction and Road Maintenance"
+    group: "Works"
+    terms: ["construction", "road", "roads", "repair of link road", "metaling", "metalling", "blacktop", "asphalt", "bridge", "culvert", "retaining wall", "protection work", "building", "renovation", "rehabilitation", "pavement", "irrigation channel", "civil works", "boundary wall", "water supply scheme", "carpeting", "pcc", "rcc"]
+  - name: "Medical Equipment and Healthcare Supplies"
+    group: "Health"
+    terms: ["medical", "medicine", "medicines", "hospital", "surgical", "diagnostic", "laboratory", "x-ray", "biomedical", "reagent", "reagents", "healthcare", "dispensary", "sehat sahulat", "ultrasound", "ventilator", "pharmaceutical", "drugs", "health", "dental", "ambulance", "vaccine"]
+  - name: "Furniture and Stationery"
+    group: "Supplies"
+    terms: ["furniture", "stationery", "stationary", "office supplies", "printing material", "printing materials", "chair", "chairs", "almirah", "fixture", "fixtures"]
+  - name: "Consultancy and Professional Services"
+    group: "Services"
+    terms: ["consultancy", "consultant", "consulting", "advisory", "audit", "feasibility study", "survey", "design and supervision", "supervision", "legal services", "training", "capacity building", "expression of interest", "request for proposal"]
+  - name: "Vehicles and Transport"
+    group: "Supplies"
+    terms: ["vehicle", "vehicles", "transport", "tyres", "tires", "car", "jeep", "pickup", "bus", "motorcycle", "fuel", "petrol", "diesel", "lubricant", "spare parts", "repair of transport", "overhauling", "rented vehicles", "hiring of vehicles", "wheel loader", "dumper"]
+  - name: "Energy and Power"
+    group: "Works"
+    terms: ["solar", "hydropower", "hydel", "power house", "transformer", "transmission line", "generator", "electrification", "electrical", "electric", "turbine", "penstock", "battery", "inverter"]
+  - name: "Food, Catering and General Supplies"
+    group: "Supplies"
+    terms: ["ration", "food", "catering", "uniform", "uniforms", "bed sheets", "blankets", "towels", "detergent", "soap", "tissue", "linen", "miscellaneous items", "cleaning", "janitorial"]
+  - name: "Agriculture, Forestry and Environment"
+    group: "Works"
+    terms: ["agriculture", "seeds", "fertilizer", "forest", "plantation", "livestock", "fisheries", "irrigation", "glacier", "glof", "disaster", "flood", "early warning"]
+  - name: "Water Supply and Irrigation"
+    group: "Works"
+    terms: ["water supply", "water channel", "lift irrigation", "water tank", "irrigation", "filtration plant", "pipeline", "pipes", "upvc", "hdpe", "tube well", "solar pumping"]
+  - name: "Auction and Disposal"
+    group: "Services"
+    terms: ["auction", "unserviceable", "disposal", "lease", "scrap"]
+  - name: "Sports and Culture"
+    group: "Services"
+    terms: ["sports", "sports gears", "tournament", "cultural", "museum", "archaeology", "tourist", "tourism"]
+  - name: "Education and Training"
+    group: "Services"
+    terms: ["school", "college", "university", "education", "classroom", "curriculum", "scholarship", "library", "books"]

@@ -1,0 +1,4 @@
+# Only if needed:
+playwright>=1.44        # JS-rendered pages (then: playwright install --with-deps chromium; set render: true in site.yaml)
+keybert>=0.8            # KEYWORD_METHOD=keybert (pulls in torch; image grows by ~2 GB)
+sentence-transformers>=3

@@ -1,0 +1,14 @@
+fastapi>=0.110
+uvicorn[standard]>=0.29
+sqlalchemy>=2.0
+alembic>=1.13
+psycopg2-binary>=2.9
+pydantic-settings>=2.2
+requests>=2.31
+beautifulsoup4>=4.12
+pymupdf>=1.24
+yake>=0.4.8
+scikit-learn>=1.4
+apscheduler>=3.10,<4
+pyyaml>=6
+python-dateutil>=2.9
