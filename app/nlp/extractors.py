@@ -9,7 +9,21 @@ contractor suppliers supplier interested eligible following date time hours clos
 fee security deposit per year financial office department section page also available website www org pk gov http https
 pec registered category categories work works required details shall must may will please
  public regulatory camscanner scanned procurement items item misc govt division executive engineer deputy assistant
- director commissioner dated subject""".split())
+ director commissioner dated subject notice inviting invitation security cost estimate estimated closing date form bidder bidders
+ guarantee performance late receipt registration renewal fee sealed eligible pec cdr cnic const rft feet hours hour amount newspaper
+ newspapers advertisement website advertised licensed valid code scheduled opened opening acceptance reject rejected tenderer
+ conditions terms serial name work gilgit-baltistan""".split())
+
+# Phrases that appear in nearly every notice (eligibility rules, bid security, closing times...) and say nothing about what is bought.
+NOISE_PHRASES = (
+    "pakistan engineering council", "engineering council", "estimate cost", "estimated cost", "work estimate", "bid security",
+    "cost of t", "closing date", "closing time", "form closing", "sealed tenders", "sealed bids", "bidding document",
+    "performance guarantee", "bank guarantee", "scheduled bank", "late receipt", "terms conditions", "terms and conditions",
+    "eligible bidders", "eligible firms", "interested bidders", "ppra rules", "ppra website", "renewal fee", "valid registration",
+    "right to reject", "reserves the right", "working hours", "same day", "next working", "bidding documents", "bid documents",
+    "name of work", "per cent", "notice inviting", "invitation for bids", "for bids",
+    "pakistan engineering", "baltistan communication", "communication works", "communication & works", "office of the",
+)
 
 
 @dataclass
@@ -24,6 +38,9 @@ def _ok(term: str) -> bool:
     if not toks or len(term) < 3 or len(term) > 80:
         return False
     if all(t.isdigit() for t in toks) or all(t in BOILERPLATE for t in toks):
+        return False
+    low = term.lower()
+    if any(n in low for n in NOISE_PHRASES):
         return False
     return toks[0] not in BOILERPLATE or len(toks) > 1 and toks[-1] not in BOILERPLATE
 

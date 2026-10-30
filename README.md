@@ -54,7 +54,7 @@ curl -H "X-API-Key: <API_KEYS value>" http://localhost:8000/api/v1/tenders
 ```bash
 python -m venv .venv && . .venv/bin/activate
 pip install -r requirements-dev.txt
-pytest                                   # 79 tests, no network or Postgres needed (SQLite in-memory)
+pytest                                   # 100 tests, no network or Postgres needed (SQLite in-memory)
 DATABASE_URL=postgresql+psycopg2://... alembic upgrade head
 uvicorn app.asgi:app --reload
 python -m app.scheduler                  # or: python -m app.cli scrape

@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app.config import Settings, get_settings
 from app.models import (Category, Keyword, ProcessingStatus, Tender, TenderCategory,
                         TenderKeyword, utcnow)
-from app.nlp.extractors import BaseExtractor, get_extractor
+from app.nlp.extractors import BOILERPLATE, BaseExtractor, ExtractedKeyword, get_extractor, snippet_for
 from app.nlp.taxonomy import Taxonomy
 
 log = logging.getLogger(__name__)
@@ -52,12 +52,27 @@ def process_tender(session: Session, tender: Tender, extractor: BaseExtractor, t
     full = f"{title}. {body}".strip()
     method = f"{extractor.version}+taxonomy-{taxonomy.version}"
 
-    keywords = {k.term: k for k in extractor.extract(full, max_keywords)}
+    dept_tokens = set(re.findall(r"[a-z0-9]+", (tender.department.name if tender.department else "").lower()))
+
+    def is_office_phrase(term: str) -> bool:
+        """Multi-word phrases made only of the issuing office's own words ('deputy director education') describe
+        who is buying, not what is bought; every PDF repeats them in its letterhead."""
+        toks = re.findall(r"[a-z0-9]+", term)
+        return len(toks) >= 2 and all(t in dept_tokens or t in BOILERPLATE for t in toks)
+
+    keywords = {k.term: k for k in extractor.extract(full, max_keywords + 10) if not is_office_phrase(k.term)}
+    for k in extractor.extract(title, max_keywords):  # the title says what is being bought: its phrases rank first
+        if is_office_phrase(k.term):
+            continue
+        old = keywords.get(k.term)
+        keywords[k.term] = ExtractedKeyword(k.term, min(1.0, 0.9 + 0.1 * k.score), (old.snippet if old else None) or k.snippet)
     matches = taxonomy.classify(title, body)
     for m in matches:  # taxonomy terms found in the text are strong, human-curated keywords
         for term in m.matched_terms:
+            toks = re.findall(r"[a-z0-9\-/]+", term)
+            if len(term) <= 2 or all(t in BOILERPLATE for t in toks):
+                continue  # abbreviations like 'const' or 'mw' help classification but are useless as keywords
             if term not in keywords:
-                from app.nlp.extractors import ExtractedKeyword, snippet_for
                 keywords[term] = ExtractedKeyword(term, min(1.0, 0.6 + m.score * 0.4), snippet_for(term, full))
 
     tender.keyword_links.clear()

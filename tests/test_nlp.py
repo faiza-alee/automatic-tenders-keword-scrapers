@@ -20,7 +20,8 @@ def test_taxonomy_classifies_each_sample(taxonomy):
 
 
 def test_taxonomy_fallback_and_title_weight(taxonomy):
-    assert taxonomy.classify("Miscellaneous", "nothing relevant here")[0].name == "Other"
+    assert taxonomy.classify("Zzz qqq", "nothing relevant here")[0].name == "Other"
+    assert taxonomy.classify("Miscellaneous", "")[0].name == "General Supplies and Mixed Items"
     assert taxonomy.classify("Laptops", "")[0].score > taxonomy.classify("", "laptops")[0].score
 
 
@@ -162,3 +163,52 @@ def test_sitewide_text_stored_as_description_is_ignored_by_nlp(session):
     t = upsert_tender(session, raw(description="Public Procurement Regulatory Authority (PPRA)")).tender
     _, body = build_text(t)
     assert body.strip() == ""
+
+
+def test_title_phrases_rank_above_office_letterhead_phrases(session, taxonomy, settings):
+    """GB-PPRA PDFs repeat the issuing office in the letterhead; it must not outrank what is being bought."""
+    header = "Office of the Deputy Director Education Diamer. Deputy Director Education Diamer. " * 4
+    t = upsert_tender(session, raw(title="Repair of Transport", dept="Deputy Director Education Office Diamer",
+                                   description=header + "Sealed tenders are invited for repair of transport.")).tender
+    session.commit()
+    run_pending_nlp(session, taxonomy=taxonomy, settings=settings)
+    terms = [k.keyword.term for k in sorted(t.keyword_links, key=lambda k: -k.score)]
+    assert terms[0] == "repair of transport"
+    assert "deputy director education" not in terms and "director education diamer" not in terms
+
+
+def test_agriculture_and_civil_work_titles(taxonomy):
+    assert "Agriculture, Forestry and Environment" in [m.name for m in taxonomy.classify("Transportation of Wheat Seed stock", "")]
+    assert "Agriculture, Forestry and Environment" in [m.name for m in taxonomy.classify("Establishment of Cattle Shed and Purchae of Milk Cow", "")]
+    assert "Construction and Road Maintenance" in [m.name for m in taxonomy.classify("Civil Work", "")]
+
+
+REAL = json.loads((DATA / "real_titles.json").read_text())
+
+
+def test_real_gbppra_titles_get_an_acceptable_category(taxonomy):
+    """52 real titles. NOTE: the taxonomy was written while reading these titles, so this is a regression guard,
+    not an honest accuracy figure. Measure real accuracy on tenders that were NOT used to build the taxonomy."""
+    misses = []
+    for r in REAL:
+        names = [m.name for m in taxonomy.classify(r["title"], "")]
+        if not set(names) & set(r["any_of"]):
+            misses.append((r["title"][:70], names))
+    assert len(misses) <= 3, misses
+
+
+def test_notice_boilerplate_never_becomes_a_keyword(session, taxonomy, settings):
+    text = (DATA / "nit_bnr_gilgit.txt").read_text()
+    from app.models import TenderDocument
+    from app.normalize import sha256
+    from app.ingest import compute_content_hash
+    t = upsert_tender(session, raw(title="Const. of 600 feet road at Sakwar Gilgit", dept="XEN B&R Division Gilgit")).tender
+    t.documents.append(TenderDocument(url="http://x/a.pdf", status="ok", text=text, text_hash=sha256(text)))
+    t.content_hash = compute_content_hash(t)
+    session.commit()
+    run_pending_nlp(session, taxonomy=taxonomy, settings=settings)
+    terms = [k.keyword.term for k in t.keyword_links]
+    for bad in ("pakistan engineering council", "work estimate cost", "const", "bid security", "estimate cost", "gilgit-baltistan office"):
+        assert not any(bad in x for x in terms), (bad, terms)
+    assert "sakwar gilgit" in terms and any("road" in x for x in terms)
+    assert max(t.category_links, key=lambda c: c.score).category.name == "Construction and Road Maintenance"
