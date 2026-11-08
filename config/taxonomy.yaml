@@ -1,6 +1,6 @@
 # Category taxonomy, built from real GB-PPRA tenders. Add categories or terms freely; bump `version` when you
 # change it (stored with each result) and run `python -m app.cli reprocess --all` to apply to existing tenders.
-version: "2026.7"
+version: "2026.8"
 fallback_category: "Other"
 categories:
   - name: "Artificial Intelligence and Machine Learning"
@@ -69,3 +69,6 @@ categories:
   - name: "Results and Notices"
     group: "Notices"
     terms: ["evaluation report", "technical evaluation", "financial evaluation", "bid evaluation", "announcement of evaluation", "award of contract", "contract award", "corrigendum", "addendum", "cancellation notice", "tender cancellation", "clarification", "clarifications", "result of", "bid opening minutes"]
+  - name: "Cleaning and Waste Management"
+    group: "Services"
+    terms: ["janitorial", "cleaning services", "waste management", "solid waste", "sweeping", "sanitation workers", "garbage"]
