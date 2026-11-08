@@ -212,3 +212,39 @@ def test_notice_boilerplate_never_becomes_a_keyword(session, taxonomy, settings)
         assert not any(bad in x for x in terms), (bad, terms)
     assert "sakwar gilgit" in terms and any("road" in x for x in terms)
     assert max(t.category_links, key=lambda c: c.score).category.name == "Construction and Road Maintenance"
+
+
+def test_title_decides_the_first_category(taxonomy):
+    """Where a title names the subject, that category must be first, whatever generic words the PDF repeats."""
+    bad = []
+    for r in REAL:
+        if "top1_in" not in r:
+            continue
+        top = taxonomy.classify(r["title"], "road building road building construction roads roads building")[0].name
+        if top not in r["top1_in"]:
+            bad.append((r["title"][:60], top))
+    assert not bad, bad
+
+
+def test_generic_pdf_words_do_not_become_keywords(session, taxonomy, settings):
+    """Taxonomy terms found only in the PDF ('road', 'building') must not be added as keywords."""
+    from app.models import TenderDocument
+    from app.normalize import sha256
+    from app.ingest import compute_content_hash
+    from app.nlp.extractors import BaseExtractor
+
+    class NoExtractor(BaseExtractor):   # isolates the taxonomy-term path
+        version = "none"
+
+        def extract(self, text, top_n=15):
+            return []
+
+    body = "road road roads building building construction construction. Consultancy for clean drinking water supply."
+    t = upsert_tender(session, raw(title="Consultancy services for Clean Drinking Water Supply", dept="DG Authority")).tender
+    t.documents.append(TenderDocument(url="http://x/a.pdf", status="ok", text=body, text_hash=sha256(body)))
+    t.content_hash = compute_content_hash(t)
+    session.commit()
+    run_pending_nlp(session, NoExtractor(), taxonomy, settings)
+    terms = [k.keyword.term for k in t.keyword_links]
+    assert "water supply" in terms                                  # in the title: kept
+    assert not {"road", "roads", "building", "construction"} & set(terms)   # only in the PDF: not kept

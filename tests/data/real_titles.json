@@ -435,5 +435,84 @@
    "Agriculture, Forestry and Environment",
    "Vehicles and Transport"
   ]
+ },
+ {
+  "title": "Capacity Building of Youth of GB in digital skills",
+  "any_of": [
+   "Education and Training",
+   "Consultancy and Professional Services"
+  ],
+  "top1_in": [
+   "Education and Training",
+   "Consultancy and Professional Services"
+  ]
+ },
+ {
+  "title": "Consultancy services for Provision of Clean Drinking Water Supply to Skawar and Minawar area Gilgit",
+  "any_of": [
+   "Consultancy and Professional Services",
+   "Water Supply and Irrigation"
+  ],
+  "top1_in": [
+   "Consultancy and Professional Services",
+   "Water Supply and Irrigation"
+  ]
+ },
+ {
+  "title": "Technical Evaluation Report for the Tender Procurement of Goods / Services",
+  "any_of": [
+   "Results and Notices"
+  ],
+  "top1_in": [
+   "Results and Notices"
+  ]
+ },
+ {
+  "title": "Effective Supervision & Monitoring in food Department GB (Const of Check Post of Food Department at Chalt Chanas Nagar)",
+  "any_of": [
+   "Construction and Road Maintenance"
+  ]
+ },
+ {
+  "title": "IMPROVEMENT/ WIDENING OF ROAD FROM JSR TO LAGAF STAK EMS NO.1149 PORTION (II).",
+  "any_of": [
+   "Construction and Road Maintenance"
+  ],
+  "top1_in": [
+   "Construction and Road Maintenance"
+  ]
+ },
+ {
+  "title": "DEVELOPMENT OF MANAGEMENT PLAN OF KHUNJERAB NATIONAL PARK (2027–2037)",
+  "any_of": [
+   "Agriculture, Forestry and Environment",
+   "Consultancy and Professional Services"
+  ],
+  "top1_in": [
+   "Agriculture, Forestry and Environment",
+   "Consultancy and Professional Services"
+  ]
+ },
+ {
+  "title": "\"Empowering Women Through Digital Skill Development\"",
+  "any_of": [
+   "Education and Training",
+   "Consultancy and Professional Services"
+  ],
+  "top1_in": [
+   "Education and Training",
+   "Consultancy and Professional Services"
+  ]
+ },
+ {
+  "title": "Extension of Road from Sewerage Treatment Plant to KKH Gilgit and Adjoining Link Roads.",
+  "any_of": [
+   "Construction and Road Maintenance",
+   "Water Supply and Irrigation"
+  ],
+  "top1_in": [
+   "Construction and Road Maintenance",
+   "Water Supply and Irrigation"
+  ]
  }
 ]

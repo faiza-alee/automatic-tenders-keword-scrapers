@@ -6,6 +6,8 @@
   python -m app.cli reprocess --id 42
   python -m app.cli probe URL [--file page.html]   # show what the parser extracts from a page (calibration)
   python -m app.cli sync-taxonomy
+  python -m app.cli llm-check             # is DEEPSEEK_API_KEY set and does DeepSeek answer? (never prints the key)
+  python -m app.cli llm-compare --n 30    # LLM vs taxonomy on 30 stored tenders, nothing is saved
 """
 import argparse
 import json
@@ -21,8 +23,13 @@ def main(argv=None) -> int:
     sub.add_parser("scrape")
     sub.add_parser("nlp")
     sub.add_parser("sync-taxonomy")
+    sub.add_parser("llm-check")
+    lc = sub.add_parser("llm-compare")
+    lc.add_argument("--n", type=int, default=30)
     rp = sub.add_parser("reprocess")
     rp.add_argument("--all", action="store_true")
+    rp.add_argument("--missing-llm", action="store_true")
+    rp.add_argument("--yes", action="store_true", help="confirm paid LLM calls")
     rp.add_argument("--id", type=int)
     pr = sub.add_parser("probe")
     pr.add_argument("url", nargs="?")
@@ -31,6 +38,39 @@ def main(argv=None) -> int:
     a = ap.parse_args(argv)
     settings = get_settings()
     setup_logging(settings.log_level)
+
+    if a.cmd in ("llm-check", "llm-compare"):
+        from app.nlp.llm import LLMError, build_llm_analyzer, compare_methods
+        from app.nlp.taxonomy import Taxonomy
+        key = settings.deepseek_api_key.get_secret_value().strip() if settings.deepseek_api_key else ""
+        print("DEEPSEEK_API_KEY :", "maujood hai" if key else "NAHI MILA (.env mein DEEPSEEK_API_KEY=... daalna hai)")
+        print("USE_LLM          :", settings.use_llm, "(istemal ke liye USE_LLM=true hona chahiye)")
+        print("Model            :", settings.deepseek_model)
+        if not key:
+            return 1
+        tax = Taxonomy.from_yaml(settings.taxonomy_path)
+        settings.use_llm = True  # for this check only
+        analyzer = build_llm_analyzer(settings, tax)
+        if a.cmd == "llm-check":
+            try:
+                res = analyzer.analyze("Construction of link road at Sakwar Gilgit", "XEN B&R Division Gilgit",
+                                       "Sealed tenders are invited for construction of 600 feet road and a retaining wall.")
+            except LLMError as e:
+                print("Nateeja          : NAKAM -", e)
+                return 1
+            print("Nateeja          : THEEK")
+            print("  category :", res.categories)
+            print("  keywords :", res.keywords)
+            return 0
+        from app.db import get_session_factory
+        with get_session_factory()() as session:
+            rows = compare_methods(session, analyzer, tax, a.n)
+        agree = sum(1 for r in rows if r["llm"] == r["taxonomy"])
+        for r in rows:
+            mark = "=" if r["llm"] == r["taxonomy"] else "!"
+            print(f"{mark} #{r['id']:<4} {r['title'][:55]:55s} | taxonomy: {r['taxonomy'][:28]:28s} | LLM: {(r['llm'] or r.get('error', '?'))[:40]}")
+        print(f"\n{agree}/{len(rows)} mein dono ki pehli category ek jaisi. '!' wali qataron ko aankh se dekh kar batayen kaun sahi hai.")
+        return 0
 
     if a.cmd == "probe":
         from app.scraper.client import SiteClient
@@ -63,10 +103,20 @@ def main(argv=None) -> int:
             sync_taxonomy(session, Taxonomy.from_yaml(settings.taxonomy_path))
             session.commit()
         elif a.cmd == "reprocess":
-            if not a.all and a.id is None:
-                print("give --all or --id", file=sys.stderr)
+            if not (a.all or a.missing_llm) and a.id is None:
+                print("give --all, --missing-llm or --id", file=sys.stderr)
                 return 2
-            n = mark_for_reprocess(session, None if a.all else a.id)
+            from sqlalchemy import func, select
+            from app.models import ProcessingStatus
+            if (a.all or a.missing_llm) and settings.use_llm and not a.yes:
+                q = select(func.count()).select_from(ProcessingStatus)
+                if a.missing_llm:
+                    q = q.where((ProcessingStatus.nlp_method.is_(None)) | (~ProcessingStatus.nlp_method.like("llm-%")))
+                n = session.scalar(q)
+                print(f"USE_LLM=true: ye {n} tenders par DeepSeek chalayega ({n} paid calls).")
+                print("Pehle `llm-compare --n 30` se nateeja dekh lein. Pakka ho to dobara chalayen, aakhir mein --yes lagakar.")
+                return 2
+            n = mark_for_reprocess(session, None if (a.all or a.missing_llm) else a.id, only_without_llm=a.missing_llm)
             session.commit()
             print(f"marked {n} tender(s) for reprocessing")
             print(run_pending_nlp(session, settings=settings))

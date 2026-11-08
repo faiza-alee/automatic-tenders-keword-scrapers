@@ -91,3 +91,27 @@ docs/INTEGRATION.md      API guide for the integrating developer    docs/MAINTEN
   and never stop the batch; re-running a half-finished run is harmless.
 * **Not included:** OCR is optional (`OCR_ENABLED=true` needs the Tesseract binary); legacy `.doc` files are not text-extracted;
   rate limiting is in-process per API worker (use Redis for a shared limit if you scale API replicas).
+
+## Optional: a language model reads each tender (DeepSeek)
+
+With `USE_LLM=true` every tender (title, issuing office, start of the PDF text) is sent to DeepSeek, which picks the category
+(only from `config/taxonomy.yaml`, so filters keep working) and 6-10 keywords naming the goods/works and place.
+If DeepSeek is down, the key is missing/wrong, or the balance is finished, the system falls back to the normal taxonomy +
+keyword path automatically; the method used is stored with every tender (`llm-deepseek-flash+taxonomy-...` or `yake-...`).
+
+1. Put the key **only in your real `.env`** (never in `.env.example`, Git, chat or email): `DEEPSEEK_API_KEY=sk-...`, `USE_LLM=true`.
+2. Test it (the key is never printed): `docker compose exec worker python -m app.cli llm-check`
+3. Compare before you commit to it (saves nothing): `docker compose exec worker python -m app.cli llm-compare --n 30`
+4. `docker compose restart api worker`. From now on every NEW or CHANGED tender is sent to DeepSeek once.
+
+**Cost rules (it is paid per tender):**
+* A tender is sent to DeepSeek **once**. Unchanged tenders are never sent again; a tender is re-sent only if its title/description/PDF text changes.
+* Tenders processed before `USE_LLM` was switched on stay as they are. To give them an LLM answer deliberately:
+  `reprocess --missing-llm` (or `--all`). With `USE_LLM=true` these commands tell you how many paid calls they would make and
+  only run when you add `--yes`.
+* At most `LLM_MAX_PER_RUN` (default 100) tenders per run; the rest wait for the next run.
+* If DeepSeek is down or the balance is finished, the tender gets the normal taxonomy + keyword result immediately, stays
+  *pending* and is retried on a later run (attempts are not used up). An unusable answer is retried at most 3 times.
+
+Model and address can be changed with `DEEPSEEK_MODEL` (default `deepseek-flash`; list the valid names with `GET https://api.deepseek.com/models`; the old `deepseek-chat` was retired) / `DEEPSEEK_BASE_URL` (see https://api-docs.deepseek.com).
+Tender text (public data) is sent to DeepSeek when this mode is on, and each tender costs one API call.

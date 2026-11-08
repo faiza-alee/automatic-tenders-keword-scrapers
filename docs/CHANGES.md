@@ -1,5 +1,12 @@
 # Changes since the first version (all included in this zip)
 
+8. **Taxonomy 2026.7 and ranking:** the title decides the first category; PDF-only generic words ('road', 'building') no
+   longer add keywords or beat the title; 'Notices' categories come first; digital-skills terms added.
+9. **DeepSeek LLM (optional, `USE_LLM=true`)** reads each tender and picks the category (from the taxonomy only) and keywords; automatic fallback
+   to taxonomy + YAKE; `llm-check` / `llm-compare` commands; the key is kept as a secret. Not tested against the live service
+   from the build environment. One call per tender (new/changed only), per-run cap, retry rules, `reprocess --missing-llm`
+   and a `--yes` confirmation before paid bulk runs.
+
 1. **Scraper retargeted** to the real site `https://www.gbppra.gov.pk` (`/viewall?page=N` + `/procurementdetails/<id>`);
    new `links` mode, `page_param` pagination, label/value detail parsing, 3-cell rows ("In Objection"), title fallbacks.
 2. **Bug fixes:** NumPy scores crashed PostgreSQL inserts; "opening date" mistaken for closing date; site-wide meta text

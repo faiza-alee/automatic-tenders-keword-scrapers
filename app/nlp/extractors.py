@@ -116,7 +116,7 @@ class KeyBertExtractor(BaseExtractor):
         return [ExtractedKeyword(t.lower(), float(s), snippet_for(t, text)) for t, s in res if _ok(t)][:top_n]
 
 
-def get_extractor(method: str) -> BaseExtractor:
+def get_extractor(method: str, settings=None) -> BaseExtractor:
     method = (method or "yake").lower()
     if method == "yake":
         return YakeExtractor()

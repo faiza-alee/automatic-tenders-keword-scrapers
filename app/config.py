@@ -1,6 +1,7 @@
 """Central configuration, read from environment variables / .env."""
 from functools import lru_cache
 
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -36,6 +37,15 @@ class Settings(BaseSettings):
 
     # --- NLP ---
     keyword_method: str = "yake"  # yake | tfidf | keybert
+    # LLM that reads each tender and picks its category + keywords (DeepSeek, OpenAI-compatible API).
+    # The key lives ONLY in .env / the environment (DEEPSEEK_API_KEY).
+    use_llm: bool = False
+    deepseek_api_key: SecretStr | None = None
+    deepseek_model: str = "deepseek-flash"
+    deepseek_base_url: str = "https://api.deepseek.com"
+    llm_timeout_seconds: int = 90
+    llm_max_chars: int = 3500
+    llm_max_per_run: int = 100  # DeepSeek is called for at most this many tenders per run; the rest wait for the next run
     taxonomy_path: str = "config/taxonomy.yaml"
     max_nlp_attempts: int = 3
     max_keywords: int = 15
