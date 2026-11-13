@@ -1,74 +1,154 @@
-# Category taxonomy, built from real GB-PPRA tenders. Add categories or terms freely; bump `version` when you
-# change it (stored with each result) and run `python -m app.cli reprocess --all` to apply to existing tenders.
-version: "2026.8"
-fallback_category: "Other"
+# # Category taxonomy, built from real GB-PPRA tenders. Add categories or terms freely; bump `version` when you
+# # change it (stored with each result) and run `python -m app.cli reprocess --all` to apply to existing tenders.
+# version: "2026.8"
+# fallback_category: "Other"
+# categories:
+#   - name: "Artificial Intelligence and Machine Learning"
+#     group: "Information Technology"
+#     terms: ["artificial intelligence", "machine learning", "deep learning", "neural network", "computer vision", "data science", "nlp", "chatbot", "predictive analytics"]
+#   - name: "Software and Web Development"
+#     group: "Information Technology"
+#     terms: ["software", "web development", "web portal", "mobile app", "application development", "erp", "management information system", "mis", "database", "e-governance", "web application", "cloud computing", "web hosting"]
+#   - name: "IT Equipment and Computer Hardware"
+#     group: "Information Technology"
+#     terms: ["computer", "computers", "laptop", "laptops", "desktop", "printer", "printers", "scanner", "photocopier", "server", "ups", "projector", "tablet", "toner", "hardware", "it equipment", "lcd", "led screen", "cartridge"]
+#   - name: "Networking and Cybersecurity"
+#     group: "Information Technology"
+#     terms: ["network", "networking", "router", "switch", "firewall", "cybersecurity", "cyber security", "optical fiber", "fibre", "wifi", "wi-fi", "lan", "vpn", "cctv", "antivirus"]
+#   - name: "Construction and Road Maintenance"
+#     group: "Works"
+#     terms: ["construction", "road", "roads", "repair of link road", "metaling", "metalling", "blacktop", "asphalt", "bridge", "culvert", "retaining wall", "protection work", "renovation", "rehabilitation", "pavement", "irrigation channel", "civil works", "civil work", "boundary wall", "water supply scheme", "carpeting", "pcc", "rcc", "const", "re-carpeting", "widening", "masonry", "toilets", "manholes", "sewerage", "sanitary", "drainage", "residential buildings", "office building", "shed", "complex", "maintenance materials", "constructional material", "construction material", "building material", "fencing", "building construction", "construction of building", "school building", "hospital building"]
+#   - name: "Medical Equipment and Healthcare Supplies"
+#     group: "Health"
+#     terms: ["medical", "medicine", "medicines", "hospital", "surgical", "diagnostic", "laboratory", "x-ray", "biomedical", "reagent", "reagents", "healthcare", "dispensary", "sehat sahulat", "ultrasound", "ventilator", "pharmaceutical", "drugs", "health", "dental", "ambulance", "vaccine", "surgicals", "disposables", "medical superintendent", "mch", "bhu", "health services", "feeding diet"]
+#   - name: "Furniture and Stationery"
+#     group: "Supplies"
+#     terms: ["furniture", "stationery", "stationary", "office supplies", "printing material", "printing materials", "chair", "chairs", "almirah", "fixture", "fixtures", "office stationery", "stationary items", "stationery items"]
+#   - name: "Consultancy and Professional Services"
+#     group: "Services"
+#     terms: ["consultancy", "consultant", "consulting", "advisory", "audit", "feasibility study", "survey", "design and supervision", "supervision", "legal services", "training", "capacity building", "expression of interest", "request for proposal", "hiring of consultant", "consortium", "technical proposal", "evaluation of proposals"]
+#   - name: "Vehicles and Transport"
+#     group: "Supplies"
+#     terms: ["vehicle", "vehicles", "transport", "tyres", "tires", "car", "jeep", "pickup", "bus", "motorcycle", "fuel", "petrol", "diesel", "lubricant", "spare parts", "repair of transport", "overhauling", "rented vehicles", "hiring of vehicles", "wheel loader", "dumper", "r/m of govt vehicles", "govt vehicles", "servicing", "vehicels", "transportation of", "petrol pump", "fuel pump", "natco", "filling station"]
+#   - name: "Energy and Power"
+#     group: "Works"
+#     terms: ["solar", "hydropower", "hydel", "power house", "transformer", "transmission line", "generator", "electrification", "electrical", "electric", "turbine", "penstock", "battery", "inverter", "heps", "hps", "hpp", "ips", "hydro power", "power complex", "avr", "voltage regulator", "rewinding", "pelton", "mw", "kw", "solar panels", "solar pumping", "power houses", "transmission", "transmission and distribution", "distribution line", "distribution lines", "power line", "t&d", "grid", "power related", "power works", "power related works"]
+#   - name: "Food, Catering and General Supplies"
+#     group: "Supplies"
+#     terms: ["ration", "food", "catering", "uniform", "uniforms", "bed sheets", "blankets", "towels", "detergent", "soap", "tissue", "linen", "miscellaneous items", "cleaning", "janitorial"]
+#   - name: "Agriculture, Forestry and Environment"
+#     group: "Works"
+#     terms: ["agriculture", "seeds", "seed", "wheat", "cattle", "cow", "dairy", "veterinary", "fodder", "orchard", "poultry", "fertilizer", "forest", "plantation", "livestock", "fisheries", "irrigation", "glacier", "glof", "disaster", "flood", "early warning", "jersey", "pedigree", "animal disease", "milk", "national park", "wildlife", "timber", "afforestation", "conservation", "natural resources", "barren lands", "arr", "carbon", "forest division", "forest divisions", "hunting", "trophy hunting", "hunting season", "game", "markhor", "ibex", "agri", "agri input", "agricultural", "agri. input"]
+#   - name: "Water Supply and Irrigation"
+#     group: "Works"
+#     terms: ["water supply", "water channel", "lift irrigation", "water tank", "irrigation", "filtration plant", "pipeline", "pipes", "upvc", "hdpe", "tube well", "solar pumping", "protective bunds", "bunds", "channelization", "sewerage", "sanitary", "sanitation", "drainage", "irrigation channels", "manholes"]
+#   - name: "Auction and Disposal"
+#     group: "Services"
+#     terms: ["auction", "unserviceable", "disposal", "lease", "scrap"]
+#   - name: "Sports and Culture"
+#     group: "Services"
+#     terms: ["sports", "sports gears", "tournament", "cultural", "museum", "archaeology", "tourist", "tourism", "tourist view point", "heritage", "buddha", "kargah"]
+#   - name: "Education and Training"
+#     group: "Services"
+#     terms: ["school", "college", "university", "education", "classroom", "curriculum", "scholarship", "library", "books", "examination", "examinations", "question papers", "answer scripts", "exam materials", "students", "capacity building", "skill development", "digital skill", "digital skills", "skills development", "youth", "empowering", "empowerment", "vocational training"]
+#   - name: "Finance and Investment"
+#     group: "Services"
+#     terms: ["term deposit", "tdr", "tdrs", "investment", "endowment", "microfinance", "credit rating", "insurance", "welfare fund", "banks", "bank"]
+#   - name: "Printing, Media and Publicity"
+#     group: "Services"
+#     terms: ["printing", "printing of", "publication", "media", "media houses", "media agencies", "advertisement", "promotional", "publicity", "newspaper", "envelopes", "question papers", "answer scripts"]
+#   - name: "Machinery and Heavy Equipment"
+#     group: "Supplies"
+#     terms: ["machinery", "heavy t&p", "t&p", "wheel loader", "dumper", "excavator", "bulldozer", "grader", "crane", "road maintenance machinery", "compressor", "plant and machinery"]
+#   - name: "Emergency and Security"
+#     group: "Services"
+#     terms: ["1122", "rescue", "emergency services", "emergency", "fire fighting", "police", "security guards", "intelligence", "threat", "disaster management", "gbdma", "evacuation", "relief", "relief items", "mitigation", "relief work", "emergency relief", "disaster relief"]
+#   - name: "General Supplies and Mixed Items"
+#     group: "Supplies"
+#     terms: ["misc", "misc.", "miscellaneous", "unforeseen", "generic consumables", "consumables", "others/misc", "other/misc", "goods / services", "procurement of goods", "goods/services", "supply of misc", "national celebration", "exhibition and fair", "firewood", "feeding diet"]
+#   - name: "Results and Notices"
+#     group: "Notices"
+#     terms: ["evaluation report", "technical evaluation", "financial evaluation", "bid evaluation", "announcement of evaluation", "award of contract", "contract award", "corrigendum", "addendum", "cancellation notice", "tender cancellation", "clarification", "clarifications", "result of", "bid opening minutes"]
+#   - name: "Cleaning and Waste Management"
+#     group: "Services"
+#     terms: ["janitorial", "cleaning services", "waste management", "solid waste", "sweeping", "sanitation workers", "garbage"]
+
+# GB-PPRA Tender Taxonomy
+# Designed from the original taxonomy and reviewed against the supplied 253 GB-PPRA tender records.
+# Version: 2026.17
+# Categories describe WHAT is being procured or delivered, not the notice workflow.
+# Tender title/description are primary evidence; department is supporting context only.
+# Multi-category assignment is appropriate only when distinct procurement components are evidenced.
+# Generic titles require description/BOQ evidence; otherwise use fallback category Other.
+# Terms are canonical phrases; normalize case and singular/plural during matching.
+# Compatibility: retains the original name/group/terms structure and all 22 category names.
+
+version: '2026.8'
+fallback_category: Other
 categories:
-  - name: "Artificial Intelligence and Machine Learning"
-    group: "Information Technology"
-    terms: ["artificial intelligence", "machine learning", "deep learning", "neural network", "computer vision", "data science", "nlp", "chatbot", "predictive analytics"]
-  - name: "Software and Web Development"
-    group: "Information Technology"
-    terms: ["software", "web development", "web portal", "mobile app", "application development", "erp", "management information system", "mis", "database", "e-governance", "web application", "cloud computing", "web hosting"]
-  - name: "IT Equipment and Computer Hardware"
-    group: "Information Technology"
-    terms: ["computer", "computers", "laptop", "laptops", "desktop", "printer", "printers", "scanner", "photocopier", "server", "ups", "projector", "tablet", "toner", "hardware", "it equipment", "lcd", "led screen", "cartridge"]
-  - name: "Networking and Cybersecurity"
-    group: "Information Technology"
-    terms: ["network", "networking", "router", "switch", "firewall", "cybersecurity", "cyber security", "optical fiber", "fibre", "wifi", "wi-fi", "lan", "vpn", "cctv", "antivirus"]
-  - name: "Construction and Road Maintenance"
-    group: "Works"
-    terms: ["construction", "road", "roads", "repair of link road", "metaling", "metalling", "blacktop", "asphalt", "bridge", "culvert", "retaining wall", "protection work", "renovation", "rehabilitation", "pavement", "irrigation channel", "civil works", "civil work", "boundary wall", "water supply scheme", "carpeting", "pcc", "rcc", "const", "re-carpeting", "widening", "masonry", "toilets", "manholes", "sewerage", "sanitary", "drainage", "residential buildings", "office building", "shed", "complex", "maintenance materials", "constructional material", "construction material", "building material", "fencing", "building construction", "construction of building", "school building", "hospital building"]
-  - name: "Medical Equipment and Healthcare Supplies"
-    group: "Health"
-    terms: ["medical", "medicine", "medicines", "hospital", "surgical", "diagnostic", "laboratory", "x-ray", "biomedical", "reagent", "reagents", "healthcare", "dispensary", "sehat sahulat", "ultrasound", "ventilator", "pharmaceutical", "drugs", "health", "dental", "ambulance", "vaccine", "surgicals", "disposables", "medical superintendent", "mch", "bhu", "health services", "feeding diet"]
-  - name: "Furniture and Stationery"
-    group: "Supplies"
-    terms: ["furniture", "stationery", "stationary", "office supplies", "printing material", "printing materials", "chair", "chairs", "almirah", "fixture", "fixtures", "office stationery", "stationary items", "stationery items"]
-  - name: "Consultancy and Professional Services"
-    group: "Services"
-    terms: ["consultancy", "consultant", "consulting", "advisory", "audit", "feasibility study", "survey", "design and supervision", "supervision", "legal services", "training", "capacity building", "expression of interest", "request for proposal", "hiring of consultant", "consortium", "technical proposal", "evaluation of proposals"]
-  - name: "Vehicles and Transport"
-    group: "Supplies"
-    terms: ["vehicle", "vehicles", "transport", "tyres", "tires", "car", "jeep", "pickup", "bus", "motorcycle", "fuel", "petrol", "diesel", "lubricant", "spare parts", "repair of transport", "overhauling", "rented vehicles", "hiring of vehicles", "wheel loader", "dumper", "r/m of govt vehicles", "govt vehicles", "servicing", "vehicels", "transportation of", "petrol pump", "fuel pump", "natco", "filling station"]
-  - name: "Energy and Power"
-    group: "Works"
-    terms: ["solar", "hydropower", "hydel", "power house", "transformer", "transmission line", "generator", "electrification", "electrical", "electric", "turbine", "penstock", "battery", "inverter", "heps", "hps", "hpp", "ips", "hydro power", "power complex", "avr", "voltage regulator", "rewinding", "pelton", "mw", "kw", "solar panels", "solar pumping", "power houses", "transmission", "transmission and distribution", "distribution line", "distribution lines", "power line", "t&d", "grid", "power related", "power works", "power related works"]
-  - name: "Food, Catering and General Supplies"
-    group: "Supplies"
-    terms: ["ration", "food", "catering", "uniform", "uniforms", "bed sheets", "blankets", "towels", "detergent", "soap", "tissue", "linen", "miscellaneous items", "cleaning", "janitorial"]
-  - name: "Agriculture, Forestry and Environment"
-    group: "Works"
-    terms: ["agriculture", "seeds", "seed", "wheat", "cattle", "cow", "dairy", "veterinary", "fodder", "orchard", "poultry", "fertilizer", "forest", "plantation", "livestock", "fisheries", "irrigation", "glacier", "glof", "disaster", "flood", "early warning", "jersey", "pedigree", "animal disease", "milk", "national park", "wildlife", "timber", "afforestation", "conservation", "natural resources", "barren lands", "arr", "carbon", "forest division", "forest divisions", "hunting", "trophy hunting", "hunting season", "game", "markhor", "ibex", "agri", "agri input", "agricultural", "agri. input"]
-  - name: "Water Supply and Irrigation"
-    group: "Works"
-    terms: ["water supply", "water channel", "lift irrigation", "water tank", "irrigation", "filtration plant", "pipeline", "pipes", "upvc", "hdpe", "tube well", "solar pumping", "protective bunds", "bunds", "channelization", "sewerage", "sanitary", "sanitation", "drainage", "irrigation channels", "manholes"]
-  - name: "Auction and Disposal"
-    group: "Services"
-    terms: ["auction", "unserviceable", "disposal", "lease", "scrap"]
-  - name: "Sports and Culture"
-    group: "Services"
-    terms: ["sports", "sports gears", "tournament", "cultural", "museum", "archaeology", "tourist", "tourism", "tourist view point", "heritage", "buddha", "kargah"]
-  - name: "Education and Training"
-    group: "Services"
-    terms: ["school", "college", "university", "education", "classroom", "curriculum", "scholarship", "library", "books", "examination", "examinations", "question papers", "answer scripts", "exam materials", "students", "capacity building", "skill development", "digital skill", "digital skills", "skills development", "youth", "empowering", "empowerment", "vocational training"]
-  - name: "Finance and Investment"
-    group: "Services"
-    terms: ["term deposit", "tdr", "tdrs", "investment", "endowment", "microfinance", "credit rating", "insurance", "welfare fund", "banks", "bank"]
-  - name: "Printing, Media and Publicity"
-    group: "Services"
-    terms: ["printing", "printing of", "publication", "media", "media houses", "media agencies", "advertisement", "promotional", "publicity", "newspaper", "envelopes", "question papers", "answer scripts"]
-  - name: "Machinery and Heavy Equipment"
-    group: "Supplies"
-    terms: ["machinery", "heavy t&p", "t&p", "wheel loader", "dumper", "excavator", "bulldozer", "grader", "crane", "road maintenance machinery", "compressor", "plant and machinery"]
-  - name: "Emergency and Security"
-    group: "Services"
-    terms: ["1122", "rescue", "emergency services", "emergency", "fire fighting", "police", "security guards", "intelligence", "threat", "disaster management", "gbdma", "evacuation", "relief", "relief items", "mitigation", "relief work", "emergency relief", "disaster relief"]
-  - name: "General Supplies and Mixed Items"
-    group: "Supplies"
-    terms: ["misc", "misc.", "miscellaneous", "unforeseen", "generic consumables", "consumables", "others/misc", "other/misc", "goods / services", "procurement of goods", "goods/services", "supply of misc", "national celebration", "exhibition and fair", "firewood", "feeding diet"]
-  - name: "Results and Notices"
-    group: "Notices"
-    terms: ["evaluation report", "technical evaluation", "financial evaluation", "bid evaluation", "announcement of evaluation", "award of contract", "contract award", "corrigendum", "addendum", "cancellation notice", "tender cancellation", "clarification", "clarifications", "result of", "bid opening minutes"]
-  - name: "Cleaning and Waste Management"
-    group: "Services"
-    terms: ["janitorial", "cleaning services", "waste management", "solid waste", "sweeping", "sanitation workers", "garbage"]
+  - name: Roads, Bridges and Civil Infrastructure
+    group: Works
+    terms: ["road", "roadway", "link road", "farm to market road", "widening", "re carpeting", "recarpeting", "metalling", "blacktopping", "pavement", "bridge", "foot bridge", "culvert", "protective bund", "protection wall", "retaining wall", "stone masonry", "building construction", "construction of building", "office building", "residential building", "public toilet", "demolishing", "demolition", "reconstruction", "rehabilitation", "civil work", "construction work", "building works", "structural works", "development work", "infrastructure development", "boundary wall", "working plan office", "building maintenance", "embankment", "foot bridge construction", "link road construction", "rcc bridge", "road carpeting", "road rehabilitation", "road widening", "boundary wall construction", "building demolition", "building rehabilitation", "check post construction", "government building", "office building construction", "park improvement", "park infrastructure", "public building", "public toilet construction", "recreational facility development", "residential building construction", "vocational center construction", "vocational centre construction", "waiting shed", "working plan office construction"]
+  - name: Water Supply, Irrigation and Sanitation
+    group: Works
+    terms: ["water supply", "drinking water", "clean drinking water", "water channel", "irrigation channel", "irrigation scheme", "lift irrigation", "water tank", "filtration plant", "filtration", "pumping system", "solar pumping", "water management", "water distribution", "water pipeline", "supply line", "sewerage", "sewage", "sewerage treatment", "drainage", "manhole", "upvc pipe", "hdpe pipe", "pipe laying", "channelization", "discharge regulation", "sanitation system", "phe", "feeder channel", "irrigation channel rehabilitation", "sewerage treatment plant", "solar pumping system", "water supply line", "water supply scheme"]
+  - name: Power, Electricity and Renewable Energy
+    group: Works
+    terms: ["hydropower", "hydro power", "hydroelectric", "hpp", "heps", "hps", "power house", "power project", "power generation", "transmission line", "distribution line", "electrical works", "electricity", "transformer", "step down transformer", "transformer rewinding", "turbine", "pelton", "generator", "solar system", "solar panel", "solar energy", "solar pumping", "voltage regulator", "avr", "rewinding machine", "energy", "hydropower feasibility study", "hydropower project", "jet nozzle", "pelton turbine runner", "power related works", "solar pumping system", "transmission line rerouting"]
+  - name: Vehicles, Transport and Fleet Services
+    group: Goods and Services
+    terms: ["vehicle", "govt vehicle", "government vehicle", "transport", "transportation", "rented vehicle", "hiring of vehicle", "hire vehicle", "dry lease", "wet lease", "vehicle lease", "ambulance", "fabrication of ambulance", "spare parts of vehicle", "vehicle spare", "vehicle repair", "repair of transport", "maintenance of transport", "overhauling of vehicle", "vehicle servicing", "tyre", "tires", "motor vehicle", "fleet", "ambulance fabrication", "ambulance vehicle", "dry lease vehicle", "repair of government vehicle", "vehicle spare parts", "wet lease vehicle"]
+  - name: Agriculture, Seeds and Farm Inputs
+    group: Goods and Services
+    terms: ["agriculture", "agricultural", "vegetable seed", "hybrid seed", "maize seed", "wheat seed", "seeds", "seed supply", "fertilizer", "fertiliser", "pesticide", "insecticide", "agricultural input", "agri input", "farm tools", "farming tools", "farm machinery", "fencing for farm", "crop", "horticulture", "agricultural tools", "crop protection", "farm fencing"]
+  - name: Livestock, Veterinary and Fisheries
+    group: Goods and Services
+    terms: ["livestock", "cattle", "cow", "jersey cattle", "dairy", "milk", "animal disease", "veterinary", "vet equipment", "veterinary equipment", "animal health", "vaccines for animals", "fisheries", "fish", "fish seed", "cattle shed", "animal shed", "breeding", "animal disease reporting", "animal disease surveillance", "animal shed construction", "pedigree cattle"]
+  - name: Forestry, Wildlife and Environment
+    group: Services
+    terms: ["forestry", "forest", "wildlife", "national park", "forest park", "conservation", "natural resources", "plantation", "afforestation", "reforestation", "barren land", "carbon market", "carbon monetization", "trophy hunting", "hunting season", "timber", "forest depot", "forest management plan", "environmental protection", "carbon credit", "carbon market consultancy", "national park management plan", "natural resource conservation"]
+  - name: Medical, Healthcare and Laboratory Supplies
+    group: Goods and Services
+    terms: ["medicine", "medical", "healthcare", "health facility", "health protection", "sehat sahulat", "pmssp", "opD", "health insurance", "surgical", "surgical items", "disposable medical", "biomedical", "medical equipment", "medical gas", "oxygen", "vaccine", "lab reagent", "laboratory", "x-ray film", "xray", "diagnostic", "diagnostic equipment", "medical instrument", "patient", "indoor patient", "disease surveillance", "ambulance equipment", "biomedical equipment", "laboratory reagent", "medical supplies", "opd health insurance", "patient diet", "social health protection scheme", "surgical supplies"]
+  - name: IT, Software and Digital Systems
+    group: Information Technology
+    terms: ["information technology", "it lab", "it equipment", "computer", "laptop", "desktop", "server", "software", "licensed software", "ms office", "office 365", "digital system", "digital skills", "digital skill development", "web development", "application development", "database", "networking", "network equipment", "cybersecurity", "cyber security", "automation system", "information system", "surveillance system", "hardware", "printer", "scanner", "computer equipment", "computer hardware", "network hardware", "animal disease reporting system", "digital skills platform", "software development"]
+  - name: Office Furniture, Fixtures and Stationery
+    group: Goods
+    terms: ["stationery", "stationary items", "office supplies", "office stationery", "furniture", "furniture and fixture", "office furniture", "desk", "chair", "table", "cupboard", "cabinet", "furnishing", "fixture", "paper", "files", "office equipment"]
+  - name: Printing, Publishing and Media
+    group: Goods and Services
+    terms: ["printing", "print", "publication", "publishing", "printed material", "question paper", "answer script", "examination paper", "exam material", "printing of bills", "promotional material", "media house", "media agency", "media agencies", "media engagement", "publicity", "advertisement", "advertising", "composing", "typesetting"]
+  - name: Education, Training and Capacity Building
+    group: Services
+    terms: ["education", "educational", "school", "college", "university", "examination", "vocational center", "vocational training", "training", "capacity building", "digital skills training", "skill development", "youth skills", "teacher training", "learning", "academic", "answer script printing", "examination material", "question paper printing", "vocational centre"]
+  - name: Consultancy, Surveys and Professional Services
+    group: Services
+    terms: ["consultancy", "consultant", "consulting services", "consultancy services", "consulting firm", "consultant firm", "feasibility study", "feasibility", "detailed cost estimate", "detail cost estimate", "cost estimate", "engineering design", "design and supervision", "monitoring", "technical advisory", "advisory services", "transaction advisory", "validation", "registration", "management plan", "evaluation services", "prequalification of consultant", "carbon market consultant", "engineering consultancy", "management plan development", "supervision and monitoring", "transaction advisory services"]
+  - name: Food, Catering and Animal Feed
+    group: Goods and Services
+    terms: ["food items", "food supply", "wheat supply", "wheat transportation", "wheat", "flour", "ration", "ration items", "diet", "patient diet", "indoor patient diet", "catering", "cafeteria", "kitchen", "meal", "foodstuff", "food stuff", "firewood", "fodder", "animal feed", "feed"]
+  - name: General Goods and Miscellaneous Supplies
+    group: Goods
+    terms: ["procurement of goods", "procurement of items", "goods and services", "goods/services", "miscellaneous items", "misc items", "misc.", "others/misc", "general items", "general supplies", "consumables", "generic consumables", "relief items", "mitigation items", "unforeseen expenditure", "supply of items", "supply of materials", "maintenance materials", "spare parts", "tools"]
+  - name: Machinery, Plant and Industrial Equipment
+    group: Goods
+    terms: ["machinery", "plant and machinery", "heavy machinery", "heavy equipment", "road maintenance machinery", "construction machinery", "excavator", "loader", "bulldozer", "crane", "workshop machinery", "hardcoating", "hard coating", "rewinding machine", "mechanical equipment", "industrial equipment", "plant equipment", "overhauling machinery", "jet nozzle", "natco pump", "pelton turbine", "pump calibration", "pump machinery", "turbine runner"]
+  - name: Cleaning, Janitorial and Waste Management
+    group: Services
+    terms: ["cleaning", "janitorial", "janitorial services", "housekeeping", "sanitation services", "waste management", "solid waste", "waste collection", "garbage", "disposal of waste", "hospital cleaning", "cleaning services"]
+  - name: Emergency, Rescue and Security Services
+    group: Services
+    terms: ["emergency services", "emergency response", "rescue 1122", "rescue service", "disaster mitigation", "disaster relief", "relief work", "disaster management", "mitigation work", "threat assessment", "security system", "security services", "surveillance", "police", "fire safety", "firefighting", "safety equipment", "1122 complex"]
+  - name: Sports, Tourism, Culture and Heritage
+    group: Services
+    terms: ["sport", "sports gear", "sports equipment", "tournament", "recreation", "recreational facilities", "tourism", "tourist", "tourist viewpoint", "tourist facility", "mountaineering", "archaeology", "archeology", "heritage", "cultural", "culture", "exhibition", "fair", "event management", "archaeological services", "forest park recreation", "heritage conservation", "sports tournament"]
+  - name: Finance, Investment and Insurance
+    group: Services
+    terms: ["investment", "endowment fund", "fund management", "investment fund", "tdr", "term deposit", "financial services", "finance", "financing", "insurance", "health insurance scheme", "social health protection", "monetization of fund", "asset management", "financial advisory"]
+  - name: Auction, Lease and Disposal
+    group: Procurement Actions
+    terms: ["auction", "auction notice", "disposal", "dispose", "unserviceable materials", "unserviceable assets", "public assets", "obsolete assets", "scrap", "lease of", "leasing", "rental of property", "rent out"]
+  - name: Other
+    group: Other
+    terms: []

@@ -41,7 +41,18 @@ def _detail(t: Tender) -> S.TenderDetail:
     base["keywords"] = [k.keyword.term for k in kws]
     return S.TenderDetail(
         **base, description=t.description, eligibility=t.eligibility, last_seen_at=t.last_seen_at,
-        documents=[S.DocumentOut(url=d.url, filename=d.filename, status=d.status, has_text=bool(d.text)) for d in t.documents],
+        documents=[
+            S.DocumentOut(
+                url=d.url,
+                filename=d.filename,
+                status=d.status,
+                has_text=bool(d.text),
+                text=d.text,
+                content_type=d.content_type,
+                downloaded_at=d.downloaded_at,
+            )
+            for d in t.documents
+        ],
         keyword_details=[S.KeywordOut(term=k.keyword.term, score=k.score, method=k.method, snippet=k.snippet) for k in kws],
         category_details=[S.CategoryOut(name=c.category.name, group=c.category.group_name, score=c.score,
                                         matched_terms=c.matched_terms) for c in cats],

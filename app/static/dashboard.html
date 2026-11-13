@@ -181,7 +181,24 @@ async function showTender(id) {
       <dt>Source</dt><dd>${link}</dd>
       <dt>Categories</dt><dd>${t.category_details.map(c => pill(c.name + ' (' + c.score + ')')).join('') || '-'}</dd>
       <dt>Keywords</dt><dd>${t.keyword_details.map(k => pill(k.term + ' ' + k.score)).join('') || '<span class="muted">AI abhi pending hai</span>'}</dd>
-      <dt>Documents</dt><dd>${t.documents.map(d => `${esc(d.filename || d.url)} ${pill(d.status, d.status === 'ok' ? 'done' : d.status)}`).join('<br>') || '-'}</dd>
+      <dt>Documents</dt><dd>${t.documents.map(d => {
+        const pdf = /^https?:\/\//i.test(d.url || '')
+          ? `<a href="${esc(d.url)}" target="_blank" rel="noopener">Open PDF</a>`
+          : '';
+        const status = d.has_text && d.status === 'ok'
+          ? pill('OCR Complete', 'done')
+          : pill(d.status, d.status);
+        const extracted = d.text
+          ? `<details style="margin-top:8px">
+               <summary style="cursor:pointer">View extracted text (${d.text.length} characters)</summary>
+               <pre style="white-space:pre-wrap;overflow-wrap:anywhere;max-height:350px;overflow:auto;padding:10px;background:var(--surface, #f5f5f5)">${esc(d.text)}</pre>
+             </details>`
+          : '<span class="muted">No extracted text available</span>';
+        return `<div style="margin-bottom:14px">
+          <b>${esc(d.filename || d.url)}</b> ${status} ${pdf}
+          ${extracted}
+        </div>`;
+      }).join('') || '-'}</dd>
       <dt>AI status</dt><dd>${esc(t.nlp_status || '-')} <span class="muted">${esc(t.nlp_method || '')}</span></dd></dl>`;
     $('#dlg').showModal();
   } catch (e) { say('Detail error: ' + esc(e.message), true); }

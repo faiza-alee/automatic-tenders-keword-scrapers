@@ -1,3 +1,4 @@
+
 from datetime import date, datetime
 from typing import Generic, TypeVar
 
@@ -56,6 +57,9 @@ class DocumentOut(BaseModel):
     filename: str | None = None
     status: str
     has_text: bool
+    text: str | None = None
+    content_type: str | None = None
+    downloaded_at: datetime | None = None
 
 
 class TenderSummary(BaseModel):
